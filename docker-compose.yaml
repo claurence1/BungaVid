@@ -1,0 +1,113 @@
+version: "3"
+services:
+  # bunga_front_end:
+  #   build: ./bunga_front_end
+  #   environment:
+  #     NODE_ENV: development
+  #     SERVICE_ADDRESS: bunga_front_end
+  #   depends_on:
+  #     - mysql
+  #     - mongo
+  #   ports:
+  #     - 8000:3000
+  
+  # bunga_object:
+  #   build: ./bunga_object
+  #   environment:
+  #     NODE_ENV: development
+  #     SERVICE_ADDRESS: bunga_object
+  #   depends_on:
+  #     - mysql
+  #     - mongo
+  #   ports:
+  #     - 3000:3000
+
+
+
+  # bunga_reservation:
+  #   build: ./bunga_reservations
+  #   volumes:
+  #     - ./bunga_reservations:/usr/src/app
+  #     - bunga_reservations-node_modules:/usr/src/app/node_modules
+  #   environment:
+  #     NODE_ENV: development
+  #     SERVICE_ADDRESS: bunga_reservations
+  #   depends_on:
+  #     - mysql
+  #     - mongo
+  #   ports:
+  #     - 3005:3000
+
+  mysql:
+    image: mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment: 
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3308:3308
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8082:8080
+    depends_on:
+      - mysql
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    depends_on:
+      -  "mongo"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+
+  pilote:
+    build: ./pilote
+    environment:
+      NODE_ENV: development
+      SERVICE_ADDRESS: pilote
+    depends_on:
+      - mysql
+      - mongo
+    links:
+      - mysql
+      - mongo
+    ports:
+      - 8080:8080
+
+  # bunga_location:
+  #   build: ./bunga_location
+  #   environment:
+  #     NODE_ENV: development
+  #     SERVICE_ADDRESS: bunga_location
+  #   depends_on:
+  #     - mysql
+  #     - mongo
+  #     - pilote
+  #   ports:
+  #     - 3002:3002
+
+  bunga_utilisateur:
+    build: ./bunga_utilisateur
+    environment:
+      NODE_ENV: development
+      SERVICE_ADDRESS: bunga_utilisateur
+    depends_on:
+      - mysql
+      - mongo
+    ports:
+      - 3004:3004
+    volumes:
+      - ./log:/root/.npm/_logs/

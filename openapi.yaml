@@ -1,0 +1,952 @@
+openapi: 3.0.2
+info:
+  title: Netstream
+  description: 'Plateforme de vidéo à la demande sur des séries et films avec des spécificités sociales.'
+  termsOfService: https://netstream.net/terms/
+  contact:
+    email: api@netstream.net
+  license:
+    name: NodeJS 2.0
+    url: https://github.com/nodejs/node/blob/master/LICENSE
+  version: 1.0.0
+servers:
+- url: https://netstream.net/v1
+tags:
+- name: series
+  description: Tout ce qui concerne une série
+- name: user
+  description: Tout ce qui concerne un utilisateur
+- name: favorite
+  description: Tout ce qui concerne les favoris, les moments favoris et les commentaires
+- name: played
+  description: Tout ce qui concerne les séries vues et en cours de visionnage d'un utilisateur
+paths:
+  /series:
+    get:
+      tags:
+      - series
+      summary: Liste de toute les séries de la plateforme
+      operationId: seriesGet
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          required: false
+          description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          required: false
+          description: Le nombre de série à retourner.
+      responses:
+        200:
+          description: Opération réussi
+        400:
+          description: Nom d'utiliisateur fourni invalide
+        404:
+          description: Utilisateur introuvable
+  /series/{serie}:
+    get:
+      tags:
+      - series
+      summary: Récuperer les informations d'une série par le nom saisie
+      operationId: serieGet
+      parameters:
+      - name: serie
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Serie'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Serie'
+        400:
+          description: Titre de série fourni invalide
+        404:
+          description: Série introuvable
+  /series/{serie}/seasons:
+    get:
+      tags:
+      - series
+      summary: Récuperer la liste des saisons de la série saisie
+      operationId: serieSeasonsGet
+      parameters:
+      - name: serie
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        required: false
+        description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+        required: false
+        description: Le nombre de série à retourner.
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Season'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+        400:
+          description: Titre de série fourni invalide
+        404:
+          description: Série introuvable
+  /series/{serie}/seasons/{season}:
+    get:
+      tags:
+      - series
+      summary: Récuperer la liste des épisodes de la saison et de la série saisie
+      operationId: serieSeasonEpisodesGet
+      parameters:
+      - name: serie
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
+        required: true
+        schema:
+          type: string
+      - name: season
+        in: path
+        description: 'Le numéro de saison doit être récupéré. Utilisez 1 pour les tests.'
+        required: true
+        schema:
+          type: integer
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        required: false
+        description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+        required: false
+        description: Le nombre de série à retourner.
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Episode'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Episode'
+        400:
+          description: Titre de série fourni invalide ou numéro de saison incorrect
+        404:
+          description: Série introuvable
+  /series/suggest:
+    post:
+      tags:
+      - series
+      summary: Un utilisateur peut proposer d'ajouter une série au catalogue
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: seriesSuggest
+      requestBody:
+        description: Création d'un objet série
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Serie'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Serie'
+      responses:
+        200:
+          description: Opération réussi
+        400:
+          description: L'objet série est invalide
+      security:
+        - user_auth:
+          - write:seriesuggest
+          - read:readsuggestion
+  /favorite:
+    get:
+      tags:
+      - favorite
+      summary: Affichage de tout les favoris de l'utilisateur connecté.
+      operationId: favoriteGet
+      parameters:
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        required: false
+        description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+        required: false
+        description: Le nombre de série à retourner.
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+        400:
+          description: Favoris invalide
+        404:
+          description: Favoris introuvable
+      security:
+        - user_auth:
+          - read:favoritelist
+  /favorite/{serie}:
+    post:
+      tags:
+      - favorite
+      summary: "Ajout d'une série aux favoris de l'utilisateur"
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: favoriteAdd
+      parameters:
+      - name: serie
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+        400:
+          description: Titre de série fourni invalide
+        404:
+          description: Série introuvable
+      security:
+        - user_auth:
+          - read:favoritelist
+          - write:favoriteadd
+    put:
+      tags:
+      - favorite
+      summary: "Modification d'une séries des favoris de l'utilisateur"
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: favoriteEdit
+      parameters:
+      - name: serie
+        in: path
+        description: Le nom de la série que l'on veut modifier
+        required: true
+        schema:
+          type: string
+      - name: favoriteId
+        in: query
+        description: Numéro d'identification du favori
+        schema:
+          type: string
+        required: false
+      - name: favoriteName
+        in: query
+        description: Nom du favori
+        schema:
+          type: string
+        required: false
+      requestBody:
+        description: Mise à jour de l'objet favori
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Favorite'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Favorite'
+        required: true
+      responses:
+        400:
+          description: L'objet favori est invalide
+        404:
+          description: Favori introuvable
+      x-codegen-request-body-name: body
+      security:
+        - user_auth:
+          - write:editprofile
+    delete:
+      tags:
+      - favorite
+      summary: "Suppression d'une série des favoris de l'utilisateur"
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: favoriteDelete
+      parameters:
+      - name: serie
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+        400:
+          description: Titre de série fourni invalide
+        404:
+          description: Série introuvable
+      security:
+        - user_auth:
+          - delete:favorite
+  /favorite/moment:
+    get:
+      tags:
+      - favorite
+      summary: "Affichage d'un moment favoris des utilisateurs"
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: favoriteMomentGet
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/FavoriteMoment'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteMoment'
+        400:
+          description: Aucun favori
+      security:
+        - user_auth:
+          - read:momentlist
+    post:
+      tags:
+      - favorite
+      summary: "Ajout d'un moment favoris de l'utilisateur"
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: favoriteMomentAdd
+      requestBody:
+        description: Ajout d'un moment favori
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteMoment'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/FavoriteMoment'
+        required: true
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/FavoriteMoment'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteMoment'
+        400:
+          description: Moment ID fourni invalide
+        404:
+          description: Moment introuvable
+      security:
+        - user_auth:
+          - read:momentlist
+          - write:moment
+    delete:
+      tags:
+      - favorite
+      summary: "Suppression d'un moment favoris de l'utilisateur"
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: favoriteMomentDelete
+      parameters:
+      - name: momentID
+        in: query
+        description: "L'id du moment qui doit être récupéré. Utilisez 1 pour les tests."
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+        400:
+          description: Moment ID fourni invalide
+        404:
+          description: Moment ID fourni introuvable
+      security:
+        - user_auth:
+          - read:momentlist
+          - delete:moment
+  /favorite/moment/comment:
+    get:
+      tags:
+      - favorite
+      summary: "Affichage des commentaires d'un moment favoris sur l'épisode actuel"
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: favoriteMomentCommentsGet
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Comment'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        400:
+          description: Aucun commentaire
+      security:
+        - user_auth:
+          - read:commentlist
+          - read:momentlist
+    post:
+      tags:
+      - favorite
+      summary: "Ajout d'un commentaire à un moment existant si le propriétaire du moment favoris est connecté"
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: favoriteMomentCommentsAdd
+      requestBody:
+        description: Ajout d'un moment favori
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Comment'
+        required: true
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Comment'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        400:
+          description: Commentaire invalide
+        404:
+          description: Commentaire introuvable
+      security:
+        - user_auth:
+          - read:commentlist
+          - read:momentlist
+          - write:comment
+    delete:
+      tags:
+      - favorite
+      summary: "Suppression d'un commentaire appartenant à l'utilisateur"
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: favoriteMomentCommentsDelete
+      parameters:
+      - name: momentID
+        in: query
+        description: "L'ID du commentaire qui doit être récupéré. Utilisez 1 pour les tests."
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+        400:
+          description: Commentaire invalide
+        404:
+          description: Commentaire introuvable
+      security:
+        - user_auth:
+          - read:commentlist
+          - read:momentlist
+          - delete:comment
+  /played:
+    get:
+      tags:
+      - played
+      summary: Affichage de toute les séries en cours
+      operationId: playedGet
+      parameters:
+      - in: query
+        name: offset
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        required: false
+        description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+        required: false
+        description: Le nombre de série en cours à retourner.
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Played'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Played'
+        400:
+          description: Série invalide
+        404:
+          description: Série en cours introuvable
+      security:
+        - user_auth:
+          - read:playedlist
+  /played/{serie}:
+    post:
+      tags:
+      - played
+      summary: "Ajout d'une série dans la liste des séries en cours de l'utilisateur"
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: playedAdd
+      parameters:
+      - name: serie
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+        400:
+          description: Titre de série fourni invalide
+        404:
+          description: Série introuvable
+      security:
+        - user_auth:
+          - read:playedlist
+          - write:playedadd
+  /user:
+    post:
+      tags:
+      - user
+      summary: Création d'un utilisateur
+      description: Cette opération doit être effectué en étant connecté.
+      operationId: createUser
+      requestBody:
+        description: Création d'un objet utilisateur
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: Opération réussi
+          content: {}
+      x-codegen-request-body-name: body
+  /user/login:
+    get:
+      tags:
+      - user
+      summary: Connexion d'un utilisateur
+      operationId: loginUser
+      parameters:
+      - name: username
+        in: query
+        description: Le nom d'utilisateur pour se connecter
+        required: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: Le mot de passe lié à l'utilisateur précedemment renseigné
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+          headers:
+            X-Rate-Limit:
+              description: Nombre de tentative autorisé par heure pour un utilisateur
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: Date à laquelle le Token expire
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        400:
+          description: Nom d'utilisateur ou mot de passe invalide
+  /user/logout:
+    get:
+      tags:
+      - user
+      summary: Déconnexion de l'utilisateur actuellement connecté
+      operationId: logoutUser
+      responses:
+        default:
+          description: Opération réussi
+      security:
+        - user_auth:
+          - write:logout
+  /user/{username}:
+    get:
+      tags:
+      - user
+      summary: Récuperer un utilisateur par son nom d'utilisateur
+      operationId: getUser
+      parameters:
+      - name: username
+        in: path
+        description: 'Le nom qui doit être récupéré. Utilisez user1 pour les tests.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Nom d'utiliisateur fourni invalide
+        404:
+          description: Utilisateur introuvable
+    put:
+      tags:
+      - user
+      summary: Mise à jour d'un utilisateur
+      description: Cette opération doit être effectué en étant connecté à l'utilisateur qui est sujet à modification.
+      operationId: updateUser
+      parameters:
+      - name: username
+        in: path
+        description: La valeur par laquelle on remplace le nom d'utilisateur
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Mise à jour de l'objet utilisateur
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        400:
+          description: L'objet user est invalide
+        404:
+          description: Utilisateur introuvable
+      x-codegen-request-body-name: body
+      security:
+        - user_auth:
+          - write:editprofile
+    delete:
+      tags:
+      - user
+      summary: Suppression d'un utilisateur
+      description: Cette opération doit être effectué en étant connecté à l'utilisateur qui est sujet à suppression.
+      operationId: deleteUser
+      parameters:
+      - name: username
+        in: path
+        description: Le nom d'utilisateur qui doit être supprimé
+        required: true
+        schema:
+          type: string
+      responses:
+        400:
+          description: Le nom d'utilisateur est invalide
+        404:
+          description: Utilisateur introuvable
+      security:
+        - user_auth:
+          - delete:account
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+      xml:
+        name: User
+    Serie:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        summary:
+          type: string
+        image:
+          type: string
+        availableInCatalog:
+          type: boolean
+        ageLimit:
+          type: number
+          minimum: 1
+          maximum: 25
+        genre:
+          type: string
+    SerieComplet:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        summary:
+          type: string
+        image:
+          type: string
+        availableInCatalog:
+          type: boolean
+        seasonList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Season'
+        episodList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Episode'
+        ageLimit:
+          type: number
+          minimum: 1
+          maximum: 25
+        genre:
+          type: string
+    Season:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        number:
+          type: number
+          minimum: 1
+          maximum: 100
+        title:
+          type: string
+        publishDate:
+          type: string
+          format: date
+    SeasonComplet:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        number:
+          type: number
+          minimum: 1
+          maximum: 100
+        title:
+          type: string
+        episodeList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Episode'
+        publishDate:
+          type: string
+          format: date
+    Episode:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int16
+        title:
+          type: string
+        season:
+          type: string
+        publishDate:
+          type: string
+          format: date
+    Favorite:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        serie:
+          type: array
+          items:
+            $ref: '#/components/schemas/Serie'
+        user:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    FavoriteMoment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        serie:
+          type: array
+          items:
+            $ref: '#/components/schemas/Serie'
+        episode:
+          type: array
+          items:
+            $ref: '#/components/schemas/Episode'
+        user:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        timecode:
+          type: number
+        comment:
+          type: string
+        userIsOnline:
+          type: boolean
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        serie:
+          type: array
+          items:
+            $ref: '#/components/schemas/Serie'
+        episode:
+          type: array
+          items:
+            $ref: '#/components/schemas/Episode'
+        user:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        moment:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavoriteMoment'
+        IsResponse:
+          type: boolean
+        responseOfComment:
+          type: integer
+          format: int64
+        timecode:
+          type: number
+    Played:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        serie:
+          type: array
+          items:
+            $ref: '#/components/schemas/Serie'
+        lastViewedEpisode:
+          type: array
+          items:
+            $ref: '#/components/schemas/Episode'
+        user:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+  securitySchemes:
+    user_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://netstream.net/oauth/dialog
+          scopes:
+            write:seriesuggest: Proposé une série
+            read:readsuggestion: Afficher sa proposition de série
+            write:editprofile: Edition du profil
+            delete:account: Suppression de son compte
+            write:logout: Déconnexion du compte
+            read:favoritelist : Liste des favoris d'un utilisateur
+            write:favoriteadd : Ajout d'une série aux favoris de l'utilisateur
+            delete:favorite : Suppression d'une série dans les favoris de l'utilisateur
+            read:playedlist : Afficher la liste des séries en cours de visionnage de l'utilisateur
+            write:playedadd : Ajouter une série en cours de visionnage à l'utilisateur
+            read:momentlist : Afficher la liste des moments d'un utilisateur connecté sur l'épisode
+            write:moment : Créer un moment favori sur l'épisode
+            delete:moment : Supprimer un moment favori sur un épisode
+            read:commentlist : Afficher la liste des commentaires sur un moment d'un épisode
+            write:comment : Ajouter un commentaire à un moment favori d'un autre utilisateur connecté d'un épisode
+            delete:comment : Supprimer un commentaire écrit par l'utilisateur
