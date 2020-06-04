@@ -1,0 +1,5 @@
+{
+    "IP_UTILISATEUR" : "http://localhost:3004",
+    "IP_OBJECTS" : "http://localhost:3000",
+    "IP_LOCATION" : "http://localhost:3002"
+}

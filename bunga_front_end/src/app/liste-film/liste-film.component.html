@@ -1,0 +1,25 @@
+<table mat-table [dataSource]="films" class="tableFilm">
+
+    <ng-container matColumnDef="nomFilm">
+      <th mat-header-cell *matHeaderCellDef> Nom </th>
+      <td mat-cell *matCellDef="let film"> {{film.nomFilm}} </td>
+    </ng-container>
+  
+    <ng-container matColumnDef="descriptionFilm">
+      <th mat-header-cell *matHeaderCellDef> Description </th>
+      <td mat-cell *matCellDef="let film"> {{film.descriptionFilm}} </td>
+    </ng-container>
+  
+    <ng-container matColumnDef="prixFilm">
+      <th mat-header-cell *matHeaderCellDef> Prix </th>
+      <td mat-cell *matCellDef="let film"> {{film.prixFilm}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="reserver">
+      <th mat-header-cell *matHeaderCellDef> Reserver </th>
+      <td mat-cell *matCellDef="let film"  (click)="reserverFilm(film)"> <i class="fas fa-trash"></i> </td>
+    </ng-container>
+  
+    <tr mat-header-row *matHeaderRowDef="filmListColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: filmListColumns;"></tr>
+  </table>
