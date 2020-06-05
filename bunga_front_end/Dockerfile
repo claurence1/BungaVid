@@ -1,11 +1,13 @@
 FROM node:alpine
 
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
+COPY package.json /usr/src/app/
 RUN npm install
 
-COPY package*.json ./
+COPY . /usr/src/app
 
-EXPOSE 8000
+EXPOSE 4200
 
 CMD [ "ng", "serve" ]

@@ -1,36 +1,37 @@
-FROM python:buster
+FROM node:alpine
 
-# Install node prereqs, nodejs and yarn
-# Ref: https://deb.nodesource.com/setup_12.x
-# Ref: https://yarnpkg.com/en/docs/install
-RUN \
-  echo "deb https://deb.nodesource.com/node_12.x buster main" > /etc/apt/sources.list.d/nodesource.list && \
-  wget -qO- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
-  echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list && \
-  wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-  apt-get update && \
-  apt-get install -yqq nodejs yarn && \
-  pip install -U pip && pip install pipenv && \
-  npm i -g npm@^6 && \
-  rm -rf /var/lib/apt/lists/* && \
-  npm install bcrypt
+RUN apk update || : && apk add python
 
+RUN apk --no-cache add --virtual build-dependencies g++ make ca-certificates openssl &&\
+    ## Fetches the source code
+    wget https://github.com/P-H-C/phc-winner-argon2/archive/20161029.tar.gz -O /tmp/argon2.tar.gz &&\
+    ## Untar it
+    tar zxvf /tmp/argon2.tar.gz -C /tmp && rm /tmp/argon2.tar.gz &&\
+    mkdir -p /usr/src && mv /tmp/phc-winner-argon2-20161029 /usr/src/argon2 &&\
+    cd /usr/src/argon2 &&\
+    ## make argon2 and install
+    make && make bench && make test && make install &&\
+    ## make bench and install
+    install bench /usr/bin &&\
+    ## free space from build dependencies
+    apk del build-dependencies
+    
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 COPY package.json /usr/src/app/
 
+RUN apk add argon2
+RUN npm install bcrypt
+
 RUN npm install
-
-
-COPY package*.json ./
 
 COPY . /usr/src/app
 
-RUN cd keys
-RUN openssl ecparam -genkey -name prime256v1 -noout -out jwt_priv.pem
-RUN openssl ec -in jwt_priv.pem -pubout -out jwt_pub.pem
+# RUN cd keys
+# RUN openssl ecparam -genkey -name prime256v1 -noout -out jwt_priv.pem
+# RUN openssl ec -in jwt_priv.pem -pubout -out jwt_pub.pem
 
 EXPOSE 3004
 
-CMD [ "npm", "start" ]
+CMD [ "node", "server.js" ]

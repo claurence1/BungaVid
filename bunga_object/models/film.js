@@ -9,9 +9,9 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
-            nomFilm: DataTypes.STRING,
-            descriptionFilm: DataTypes.STRING,
-            prixFilm:DataTypes.STRING,
+            nomFilm: DataTypes.TEXT,
+            descriptionFilm: DataTypes.TEXT,
+            prixFilm:DataTypes.FLOAT,
         }
     )
     return Film;

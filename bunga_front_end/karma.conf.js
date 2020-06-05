@@ -13,7 +13,7 @@ module.exports = function (config) {
       clearContext: false
     },
     coverageIstanbulReporter: {
-      dir: require('path').join(__dirname, './coverage/goulagtv'),
+      dir: require('path').join(__dirname, './coverage/bunga'),
       reports: ['html', 'lcovonly', 'text-summary'],
       fixWebpackSourcePaths: true
     },
