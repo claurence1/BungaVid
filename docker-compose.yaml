@@ -13,6 +13,15 @@ services:
     volumes:
       - ./dbdata/film.sql:/usr/src/app/film.sql
 
+  mysql_2:
+    image: mysql
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment: 
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3309:3308
+
   adminer:
     image: adminer
     restart: always
@@ -83,7 +92,6 @@ services:
   #   ports:
   #     - 3002:3002
 
-  # bunga_utilisateur:
   #   build: ./bunga_utilisateur
   #   depends_on:
   #     - mysql
