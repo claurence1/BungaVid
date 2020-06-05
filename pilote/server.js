@@ -17,6 +17,9 @@ gateway({
   }, {
     prefix: '/locations',
     target: CONFIG.IP_LOCATION,
+  }, {
+    prefix: '/detailFilm',
+    target: CONFIG.IP_DETAILFILM,
   }]
 }).start(PORT).then(server => {
   console.log(`API Gateway listening on ${PORT} port!`)

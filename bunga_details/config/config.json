@@ -1,0 +1,10 @@
+{
+    "development": {
+        "username": "root",
+        "password": "",
+        "database": "bunga_detailFilm",
+        "host": "localhost",
+        "port": 3308,
+        "dialect": "mysql"
+    }
+}

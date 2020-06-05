@@ -6,8 +6,8 @@
 * Ajouter un utilisateur "adminstrateur" : 
 ```javascript
 use yourDatabase
-db.createUser( { user: " TOMODIFY ",
-                 pwd: " TOMODIFY ",
+db.createUser( { user: " admin ",
+                 pwd: " admin ",
                  roles: [ { role: "clusterAdmin", db: "admin" },
                           { role: "readAnyDatabase", db: "admin" },
                           "readWrite"] },
