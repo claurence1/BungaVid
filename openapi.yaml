@@ -1,32 +1,30 @@
 openapi: 3.0.2
 info:
-  title: Netstream
-  description: 'Plateforme de vidéo à la demande sur des séries et films avec des spécificités sociales.'
-  termsOfService: https://netstream.net/terms/
+  title: BungaTV
+  description: 'Plateforme de location de film en ligne.'
+  termsOfService: https://bunga.tv/terms/
   contact:
-    email: api@netstream.net
+    email: api@bunga.tv
   license:
     name: NodeJS 2.0
     url: https://github.com/nodejs/node/blob/master/LICENSE
   version: 1.0.0
 servers:
-- url: https://netstream.net/v1
+- url: https://bunga.tv/v1
 tags:
-- name: series
-  description: Tout ce qui concerne une série
+- name: film
+  description: Tout ce qui concerne un film
+- name: location d'un film
+  description: Tout ce qui concerne la location d'un film
 - name: user
   description: Tout ce qui concerne un utilisateur
-- name: favorite
-  description: Tout ce qui concerne les favoris, les moments favoris et les commentaires
-- name: played
-  description: Tout ce qui concerne les séries vues et en cours de visionnage d'un utilisateur
 paths:
-  /series:
+  /film:
     get:
       tags:
-      - series
-      summary: Liste de toute les séries de la plateforme
-      operationId: seriesGet
+      - film
+      summary: Liste de tout les films de la plateforme
+      operationId: filmsGet
       parameters:
         - in: query
           name: offset
@@ -44,210 +42,44 @@ paths:
             maximum: 100
             default: 20
           required: false
-          description: Le nombre de série à retourner.
+          description: Le nombre de film à retourner.
       responses:
         200:
           description: Opération réussi
         400:
-          description: Nom d'utiliisateur fourni invalide
+          description: Nom d'utilisateur fourni invalide
         404:
           description: Utilisateur introuvable
-  /series/{serie}:
-    get:
-      tags:
-      - series
-      summary: Récuperer les informations d'une série par le nom saisie
-      operationId: serieGet
-      parameters:
-      - name: serie
-        in: path
-        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
-        required: true
-        schema:
-          type: string
-      responses:
-        200:
-          description: Opération réussi
-          content:
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Serie'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Serie'
-        400:
-          description: Titre de série fourni invalide
-        404:
-          description: Série introuvable
-  /series/{serie}/seasons:
-    get:
-      tags:
-      - series
-      summary: Récuperer la liste des saisons de la série saisie
-      operationId: serieSeasonsGet
-      parameters:
-      - name: serie
-        in: path
-        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
-        required: true
-        schema:
-          type: string
-      - in: query
-        name: offset
-        schema:
-          type: integer
-          minimum: 0
-          default: 0
-        required: false
-        description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
-      - in: query
-        name: limit
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
-        required: false
-        description: Le nombre de série à retourner.
-      responses:
-        200:
-          description: Opération réussi
-          content:
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Season'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Season'
-        400:
-          description: Titre de série fourni invalide
-        404:
-          description: Série introuvable
-  /series/{serie}/seasons/{season}:
-    get:
-      tags:
-      - series
-      summary: Récuperer la liste des épisodes de la saison et de la série saisie
-      operationId: serieSeasonEpisodesGet
-      parameters:
-      - name: serie
-        in: path
-        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
-        required: true
-        schema:
-          type: string
-      - name: season
-        in: path
-        description: 'Le numéro de saison doit être récupéré. Utilisez 1 pour les tests.'
-        required: true
-        schema:
-          type: integer
-      - in: query
-        name: offset
-        schema:
-          type: integer
-          minimum: 0
-          default: 0
-        required: false
-        description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
-      - in: query
-        name: limit
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
-        required: false
-        description: Le nombre de série à retourner.
-      responses:
-        200:
-          description: Opération réussi
-          content:
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Episode'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Episode'
-        400:
-          description: Titre de série fourni invalide ou numéro de saison incorrect
-        404:
-          description: Série introuvable
-  /series/suggest:
     post:
       tags:
-      - series
-      summary: Un utilisateur peut proposer d'ajouter une série au catalogue
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: seriesSuggest
-      requestBody:
-        description: Création d'un objet série
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Serie'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Serie'
-      responses:
-        200:
-          description: Opération réussi
-        400:
-          description: L'objet série est invalide
-      security:
-        - user_auth:
-          - write:seriesuggest
-          - read:readsuggestion
-  /favorite:
-    get:
-      tags:
-      - favorite
-      summary: Affichage de tout les favoris de l'utilisateur connecté.
-      operationId: favoriteGet
-      parameters:
-      - in: query
-        name: offset
-        schema:
-          type: integer
-          minimum: 0
-          default: 0
-        required: false
-        description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
-      - in: query
-        name: limit
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
-        required: false
-        description: Le nombre de série à retourner.
+      - film
+      summary: Ajouter un film
+      operationId: filmPost
       responses:
         200:
           description: Opération réussi
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/Favorite'
+                $ref: '#/components/schemas/Film'
             application/json:
               schema:
-                $ref: '#/components/schemas/Favorite'
+                $ref: '#/components/schemas/Film'
         400:
-          description: Favoris invalide
+          description: Titre de film fourni invalide
         404:
-          description: Favoris introuvable
+          description: Film introuvable
       security:
         - user_auth:
-          - read:favoritelist
-  /favorite/{serie}:
-    post:
+          - write:addfilm
+  /film/{idFilm}:
+    get:
       tags:
-      - favorite
-      summary: "Ajout d'une série aux favoris de l'utilisateur"
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: favoriteAdd
+      - film
+      summary: Récuperer les informations du film
+      operationId: filmGet
       parameters:
-      - name: serie
+      - name: idFilm
         in: path
         description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
         required: true
@@ -256,66 +88,53 @@ paths:
       responses:
         200:
           description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Film'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
         400:
-          description: Titre de série fourni invalide
+          description: Titre de série film invalide
         404:
-          description: Série introuvable
-      security:
-        - user_auth:
-          - read:favoritelist
-          - write:favoriteadd
+          description: Film introuvable
     put:
       tags:
-      - favorite
-      summary: "Modification d'une séries des favoris de l'utilisateur"
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: favoriteEdit
+      - film
+      summary: Modifier un film
+      operationId: filmPut
       parameters:
-      - name: serie
+      - name: idFilm
         in: path
-        description: Le nom de la série que l'on veut modifier
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
         required: true
         schema:
           type: string
-      - name: favoriteId
-        in: query
-        description: Numéro d'identification du favori
-        schema:
-          type: string
-        required: false
-      - name: favoriteName
-        in: query
-        description: Nom du favori
-        schema:
-          type: string
-        required: false
-      requestBody:
-        description: Mise à jour de l'objet favori
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Favorite'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Favorite'
-        required: true
       responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Film'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Film'
         400:
-          description: L'objet favori est invalide
+          description: Titre de film fourni invalide
         404:
-          description: Favori introuvable
-      x-codegen-request-body-name: body
+          description: Film introuvable
       security:
         - user_auth:
-          - write:editprofile
+          - put:putfilm
     delete:
       tags:
-      - favorite
-      summary: "Suppression d'une série des favoris de l'utilisateur"
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: favoriteDelete
+      - film
+      summary: Supprimer le film
+      operationId: filmDelete
       parameters:
-      - name: serie
+      - name: idFilm
         in: path
         description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
         required: true
@@ -325,225 +144,128 @@ paths:
         200:
           description: Opération réussi
         400:
-          description: Titre de série fourni invalide
+          description: Titre de film fourni invalide
         404:
-          description: Série introuvable
+          description: Film introuvable
       security:
         - user_auth:
-          - delete:favorite
-  /favorite/moment:
+          - delete:deletefilm
+  /film/details:
     get:
       tags:
-      - favorite
-      summary: "Affichage d'un moment favoris des utilisateurs"
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: favoriteMomentGet
+      - film
+      summary: Liste les détails de tout les films
+      operationId: filmsDetailsGet
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          required: false
+          description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          required: false
+          description: Le nombre de film à retourner.
       responses:
         200:
           description: Opération réussi
-          content:
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/FavoriteMoment'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FavoriteMoment'
         400:
-          description: Aucun favori
-      security:
-        - user_auth:
-          - read:momentlist
+          description: Nom d'utilisateur fourni invalide
+        404:
+          description: Utilisateur introuvable
     post:
       tags:
-      - favorite
-      summary: "Ajout d'un moment favoris de l'utilisateur"
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: favoriteMomentAdd
-      requestBody:
-        description: Ajout d'un moment favori
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/FavoriteMoment'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/FavoriteMoment'
-        required: true
+      - film
+      summary: Ajouter les détails de film
+      operationId: filmsDetailPost
       responses:
         200:
           description: Opération réussi
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/FavoriteMoment'
+                $ref: '#/components/schemas/DetailsFilm'
             application/json:
               schema:
-                $ref: '#/components/schemas/FavoriteMoment'
+                $ref: '#/components/schemas/DetailsFilm'
         400:
-          description: Moment ID fourni invalide
+          description: Titre de film fourni invalide
         404:
-          description: Moment introuvable
+          description: Film introuvable
       security:
         - user_auth:
-          - read:momentlist
-          - write:moment
-    delete:
+          - write:adddetailsfilm
+  /film/details/{idFilm}:
+    get:
       tags:
-      - favorite
-      summary: "Suppression d'un moment favoris de l'utilisateur"
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: favoriteMomentDelete
+      - film
+      summary: Récuperer tout les détails d'un film
+      operationId: filmDetailGet
       parameters:
-      - name: momentID
-        in: query
-        description: "L'id du moment qui doit être récupéré. Utilisez 1 pour les tests."
+      - name: idFilm
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
         required: true
         schema:
           type: string
       responses:
         200:
           description: Opération réussi
-        400:
-          description: Moment ID fourni invalide
-        404:
-          description: Moment ID fourni introuvable
-      security:
-        - user_auth:
-          - read:momentlist
-          - delete:moment
-  /favorite/moment/comment:
-    get:
-      tags:
-      - favorite
-      summary: "Affichage des commentaires d'un moment favoris sur l'épisode actuel"
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: favoriteMomentCommentsGet
-      responses:
-        200:
-          description: Opération réussi
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/Comment'
+                $ref: '#/components/schemas/DetailsFilm'
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
+                $ref: '#/components/schemas/DetailsFilm'
         400:
-          description: Aucun commentaire
-      security:
-        - user_auth:
-          - read:commentlist
-          - read:momentlist
-    post:
-      tags:
-      - favorite
-      summary: "Ajout d'un commentaire à un moment existant si le propriétaire du moment favoris est connecté"
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: favoriteMomentCommentsAdd
-      requestBody:
-        description: Ajout d'un moment favori
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Comment'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/Comment'
-        required: true
-      responses:
-        200:
-          description: Opération réussi
-          content:
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Comment'
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Comment'
-        400:
-          description: Commentaire invalide
+          description: Titre de série film invalide
         404:
-          description: Commentaire introuvable
-      security:
-        - user_auth:
-          - read:commentlist
-          - read:momentlist
-          - write:comment
-    delete:
+          description: Film introuvable
+    put:
       tags:
-      - favorite
-      summary: "Suppression d'un commentaire appartenant à l'utilisateur"
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: favoriteMomentCommentsDelete
+      - film
+      summary: Modifier tout les détails d'un film
+      operationId: filmDetailPut
       parameters:
-      - name: momentID
-        in: query
-        description: "L'ID du commentaire qui doit être récupéré. Utilisez 1 pour les tests."
+      - name: idFilm
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
         required: true
         schema:
           type: string
       responses:
         200:
           description: Opération réussi
-        400:
-          description: Commentaire invalide
-        404:
-          description: Commentaire introuvable
-      security:
-        - user_auth:
-          - read:commentlist
-          - read:momentlist
-          - delete:comment
-  /played:
-    get:
-      tags:
-      - played
-      summary: Affichage de toute les séries en cours
-      operationId: playedGet
-      parameters:
-      - in: query
-        name: offset
-        schema:
-          type: integer
-          minimum: 0
-          default: 0
-        required: false
-        description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
-      - in: query
-        name: limit
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 50
-          default: 20
-        required: false
-        description: Le nombre de série en cours à retourner.
-      responses:
-        200:
-          description: Opération réussi
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/Played'
+                $ref: '#/components/schemas/DetailsFilm'
             application/json:
               schema:
-                $ref: '#/components/schemas/Played'
+                $ref: '#/components/schemas/DetailsFilm'
         400:
-          description: Série invalide
+          description: Titre de film fourni invalide
         404:
-          description: Série en cours introuvable
+          description: Film introuvable
       security:
         - user_auth:
-          - read:playedlist
-  /played/{serie}:
-    post:
+          - put:putdetailsfilm
+    delete:
       tags:
-      - played
-      summary: "Ajout d'une série dans la liste des séries en cours de l'utilisateur"
-      description: Cette opération doit être effectué en étant connecté.
-      operationId: playedAdd
+      - film
+      summary: Supprimer tout les détails d'un film
+      operationId: filmDetailDelete
       parameters:
-      - name: serie
+      - name: idFilm
         in: path
         description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
         required: true
@@ -553,13 +275,143 @@ paths:
         200:
           description: Opération réussi
         400:
-          description: Titre de série fourni invalide
+          description: Titre de film fourni invalide
         404:
-          description: Série introuvable
+          description: Film introuvable
       security:
         - user_auth:
-          - read:playedlist
-          - write:playedadd
+          - delete:deletedetailsfilm
+  /location:
+    get:
+      tags:
+      - location d'un film
+      summary: Liste des films en location
+      operationId: locationGet
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          required: false
+          description: "Nombre d'éléments à ignorer avant de commencer à collecter l'ensemble de résultats."
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          required: false
+          description: Le nombre de film à retourner.
+      responses:
+        200:
+          description: Opération réussi
+        400:
+          description: Nom d'utilisateur fourni invalide
+        404:
+          description: Utilisateur introuvable
+    post:
+      tags:
+      - location d'un film
+      summary: Ajouter un film en location
+      operationId: locationPost
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Location'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        400:
+          description: Titre de film fourni invalide
+        404:
+          description: Film introuvable
+      security:
+        - user_auth:
+          - add:addlocation
+  /location/{idLocationFilm}:
+    get:
+      tags:
+      - location d'un film
+      summary: Récupère les informations sur la location d'un film
+      operationId: locationFilmGet
+      parameters:
+      - name: idLocationFilm
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Location'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        400:
+          description: Titre de série film invalide
+        404:
+          description: Film introuvable
+    put:
+      tags:
+      - location d'un film
+      summary: Modifier la location d'un film
+      operationId: locationFilmPut
+      parameters:
+      - name: idLocationFilm
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Location'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        400:
+          description: Titre de film fourni invalide
+        404:
+          description: Film introuvable
+      security:
+        - user_auth:
+          - put:putlocation
+    delete:
+      tags:
+      - location d'un film
+      summary: Supprimer la location d'un film
+      operationId: locationFilmDelete
+      parameters:
+      - name: idLocationFilm
+        in: path
+        description: 'Le titre qui doit être récupéré. Utilisez title1 pour les tests.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Opération réussi
+        400:
+          description: Titre de film fourni invalide
+        404:
+          description: Film introuvable
+      security:
+        - user_auth:
+          - delete:deletelocation
   /user:
     post:
       tags:
@@ -636,14 +488,14 @@ paths:
       security:
         - user_auth:
           - write:logout
-  /user/{username}:
+  /user/{idUser}:
     get:
       tags:
       - user
       summary: Récuperer un utilisateur par son nom d'utilisateur
       operationId: getUser
       parameters:
-      - name: username
+      - name: idUser
         in: path
         description: 'Le nom qui doit être récupéré. Utilisez user1 pour les tests.'
         required: true
@@ -670,7 +522,7 @@ paths:
       description: Cette opération doit être effectué en étant connecté à l'utilisateur qui est sujet à modification.
       operationId: updateUser
       parameters:
-      - name: username
+      - name: idUser
         in: path
         description: La valeur par laquelle on remplace le nom d'utilisateur
         required: true
@@ -702,7 +554,7 @@ paths:
       description: Cette opération doit être effectué en étant connecté à l'utilisateur qui est sujet à suppression.
       operationId: deleteUser
       parameters:
-      - name: username
+      - name: idUser
         in: path
         description: Le nom d'utilisateur qui doit être supprimé
         required: true
@@ -742,211 +594,60 @@ components:
           format: int32
       xml:
         name: User
-    Serie:
+    Film:
       type: object
       properties:
         id:
           type: integer
           format: int64
-        title:
+        nomFilm:
           type: string
-        summary:
+        descriptionFilm:
           type: string
-        image:
-          type: string
-        availableInCatalog:
-          type: boolean
-        ageLimit:
+        prixFilm:
           type: number
           minimum: 1
-          maximum: 25
-        genre:
-          type: string
-    SerieComplet:
+          maximum: 500
+    DetailsFilm:
       type: object
       properties:
         id:
           type: integer
           format: int64
-        title:
+        nomFilm:
           type: string
-        summary:
+        descriptionFilm:
           type: string
-        image:
-          type: string
-        availableInCatalog:
-          type: boolean
-        seasonList:
-          type: array
-          items:
-            $ref: '#/components/schemas/Season'
-        episodList:
-          type: array
-          items:
-            $ref: '#/components/schemas/Episode'
-        ageLimit:
+        prixFilm:
           type: number
           minimum: 1
-          maximum: 25
-        genre:
-          type: string
-    Season:
+          maximum: 500
+    Location:
       type: object
       properties:
         id:
           type: integer
           format: int64
-        number:
-          type: number
-          minimum: 1
-          maximum: 100
-        title:
+        nomFilm:
           type: string
-        publishDate:
+        nomClient:
           type: string
-          format: date
-    SeasonComplet:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        number:
-          type: number
-          minimum: 1
-          maximum: 100
-        title:
-          type: string
-        episodeList:
-          type: array
-          items:
-            $ref: '#/components/schemas/Episode'
-        publishDate:
-          type: string
-          format: date
-    Episode:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        number:
-          type: integer
-          format: int16
-        title:
-          type: string
-        season:
-          type: string
-        publishDate:
-          type: string
-          format: date
-    Favorite:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        serie:
-          type: array
-          items:
-            $ref: '#/components/schemas/Serie'
-        user:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-    FavoriteMoment:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        serie:
-          type: array
-          items:
-            $ref: '#/components/schemas/Serie'
-        episode:
-          type: array
-          items:
-            $ref: '#/components/schemas/Episode'
-        user:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        timecode:
-          type: number
-        comment:
-          type: string
-        userIsOnline:
-          type: boolean
-    Comment:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        serie:
-          type: array
-          items:
-            $ref: '#/components/schemas/Serie'
-        episode:
-          type: array
-          items:
-            $ref: '#/components/schemas/Episode'
-        user:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        moment:
-          type: array
-          items:
-            $ref: '#/components/schemas/FavoriteMoment'
-        IsResponse:
-          type: boolean
-        responseOfComment:
-          type: integer
-          format: int64
-        timecode:
-          type: number
-    Played:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        serie:
-          type: array
-          items:
-            $ref: '#/components/schemas/Serie'
-        lastViewedEpisode:
-          type: array
-          items:
-            $ref: '#/components/schemas/Episode'
-        user:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
   securitySchemes:
     user_auth:
       type: oauth2
       flows:
         implicit:
-          authorizationUrl: http://netstream.net/oauth/dialog
+          authorizationUrl: http://bunga.tv/oauth/dialog
           scopes:
-            write:seriesuggest: Proposé une série
-            read:readsuggestion: Afficher sa proposition de série
+            write:addfilm: Ajouter un film
+            put:putfilm: Modifier un film
+            delete:deletefilm: Supprimer un film
+            write:adddetailsfilm: Ajouter des détails d'un film
+            put:putdetailsfilm: Modifier des details d'un film
+            delete:deletedetailsfilm: Supprimer des détails d'un film
+            write:addlocation: Ajouter un film en location
+            put:putlocation: Modifier un film en location
+            delete:deletelocation: Ajouter un film en location
             write:editprofile: Edition du profil
             delete:account: Suppression de son compte
             write:logout: Déconnexion du compte
-            read:favoritelist : Liste des favoris d'un utilisateur
-            write:favoriteadd : Ajout d'une série aux favoris de l'utilisateur
-            delete:favorite : Suppression d'une série dans les favoris de l'utilisateur
-            read:playedlist : Afficher la liste des séries en cours de visionnage de l'utilisateur
-            write:playedadd : Ajouter une série en cours de visionnage à l'utilisateur
-            read:momentlist : Afficher la liste des moments d'un utilisateur connecté sur l'épisode
-            write:moment : Créer un moment favori sur l'épisode
-            delete:moment : Supprimer un moment favori sur un épisode
-            read:commentlist : Afficher la liste des commentaires sur un moment d'un épisode
-            write:comment : Ajouter un commentaire à un moment favori d'un autre utilisateur connecté d'un épisode
-            delete:comment : Supprimer un commentaire écrit par l'utilisateur

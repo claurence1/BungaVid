@@ -19,26 +19,26 @@ Donc il est compliqué de pouvoir libérer autant de temps. Et les 2 jours qu'on
 -----------------
 ## Bunga Objects :
 
-/films/
+/film
 => GET & POST
-/films/:filmId
+/film/:filmId
 => GET & PATCH & DELETE
 
 ## Bunga Location : 
 
-/locationFilms/
+/location
 => GET & POST
-/locationFilms/:locationFilmId
+/location/:locationFilmId
 => GET & PATCH & DELETE
 
 ## Bunga Utilisateur :
 
 
-/api/login
+/user/login
 => POST (création de compte)
-/api/:id
+/user/:id
 => DELETE & GET
-/api/
+/user
 => POST & GET
 
 ## Bunga Détails :

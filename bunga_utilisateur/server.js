@@ -17,7 +17,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use('/api', require('./routes/utilisateurs'));
+app.use('/user', require('./routes/utilisateurs'));
 
 app.set("port", process.env.PORT || 3004);
 

@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 })
 
 app.use('/', routes);
-app.use('/detailFilm', detailFilm);
+app.use('/film/details', detailFilm);
 
 // build db sontext {force: true}
 server.db.sequelize.sync().then(function() {

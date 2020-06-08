@@ -9,16 +9,16 @@ gateway({
   ],
 
   routes: [{
-    prefix: '/utilisateur',
+    prefix: '/user',
     target: CONFIG.IP_UTILISATEUR
   }, {
-    prefix: '/objects',
+    prefix: '/film',
     target: CONFIG.IP_OBJECTS,
   }, {
-    prefix: '/locations',
+    prefix: '/location',
     target: CONFIG.IP_LOCATION,
   }, {
-    prefix: '/detailFilm',
+    prefix: '/film/details',
     target: CONFIG.IP_DETAILFILM,
   }]
 }).start(PORT).then(server => {

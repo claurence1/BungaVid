@@ -16,8 +16,9 @@ services:
   mysql_2:
     image: mysql
     restart: always
-    command: --default-authentication-plugin=mysql_native_password
+    command: --init-file /usr/src/app/detailsfilm.sql
     environment: 
+      MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: root
     ports:
       - 3309:3308
@@ -29,13 +30,14 @@ services:
       - 8082:8080
     depends_on:
       - mysql
+      - mysql_2
 
   mongo:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
 
   mongo-express:
     image: mongo-express
@@ -68,17 +70,27 @@ services:
     ports:
       - 3000:3000
 
-  bunga_front_end:
-    build: ./bunga_front_end
+  bunga_details:
+    build: ./bunga_details
     environment:
       NODE_ENV: development
-      SERVICE_ADDRESS: bunga_front_end
     depends_on:
-      - mysql
-      - mongo
+      - mysql_2
       - pilote
     ports:
-      - 4200:4200
+      - 3006:3006
+
+  # bunga_front_end:
+  #   build: ./bunga_front_end
+  #   environment:
+  #     NODE_ENV: development
+  #     SERVICE_ADDRESS: bunga_front_end
+  #   depends_on:
+  #     - mysql
+  #     - mongo
+  #     - pilote
+  #   ports:
+  #     - 4200:4200
 
   # bunga_location:
   #   build: ./bunga_location

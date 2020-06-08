@@ -1,2 +1,0 @@
-# BungaVid bunga_location
-

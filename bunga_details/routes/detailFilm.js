@@ -3,7 +3,7 @@ var express = require('express');
 var router  = express.Router();
 
 module.exports = (express) => {
-    // http:get /detailFilm
+    // http:get /film/details
     
     router.get('/', (req, res) => {
     models.db.DetailFilm.findAll({ raw: true }).then(film => {
@@ -13,7 +13,7 @@ module.exports = (express) => {
     });
 });
 
-// http:post /detailFilm
+// http:post /film/details
 router.post('/', (req, res) => {
     models.db.DetailFilm.create({
         nomFilm: req.body.nomFilm,
@@ -26,7 +26,7 @@ router.post('/', (req, res) => {
     });
 });
 
-// http:get /detailFilm/id
+// http:get /film/details/id
 router.get('/:id', (req, res) => {
     models.db.DetailFilm.findOne({
         where: { id: req.params.id }
@@ -39,7 +39,7 @@ router.get('/:id', (req, res) => {
 });
 
 
-// http:delete /detailFilm/id
+// http:delete /film/details/id
 router.delete('/:id', (req, res) => {
     models.db.DetailFilm.destroy({
         where: { id: req.params.id }
@@ -50,7 +50,7 @@ router.delete('/:id', (req, res) => {
     });
 });
 
-// http:update /detailFilm/{id}
+// http:update /film/details/{id}
 router.put('/:id', (req, res) => {
     models.db.DetailFilm.update({
         nomFilm: req.body.nomFilm,
