@@ -104,6 +104,7 @@ services:
   #   ports:
   #     - 3002:3002
 
+  # bunga_utilisateur:
   #   build: ./bunga_utilisateur
   #   depends_on:
   #     - mysql
@@ -111,4 +112,4 @@ services:
   #   ports:
   #     - 3004:3004
   #   volumes:
-  #     - ./log:/root/.npm/_logs/
+  #     - ./logs:/root/.npm/_logs/
